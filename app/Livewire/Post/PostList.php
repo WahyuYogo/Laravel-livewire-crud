@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Livewire\Post;
+
+use Livewire\Component;
+use App\Models\Post;
+
+class PostList extends Component
+{
+    public $keyword;
+    public function render()
+    {
+        $posts = $this->getData();
+        return view('livewire.post.post-list',compact('posts'));
+    }
+    public function getData(){
+        $data = Post::where('title','like','%'.$this->keyword.'%')->paginate(12);
+        return $data;
+    }
+    public function deletePost($id){
+        $post = Post::find($id);
+        if (!empty($post)){
+            $post->delete();
+            session()->flash('msg', __('Post Deleted Successfully'));
+            session()->flash('alert', 'success');
+        } else {
+            session()->flash('msg', __('Post Not Found'));
+            session()->flash('alert', 'danger');
+        }
+    }
+}
